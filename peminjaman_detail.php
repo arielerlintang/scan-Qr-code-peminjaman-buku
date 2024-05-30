@@ -99,22 +99,38 @@
 <!-- /.content-wrapper -->
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<!--  Memuat library jsQR dari CDN, yang digunakan untuk memproses gambar dan mendeteksi QR code.  -->
+
 <script>
   const video = document.getElementById('video');
   const scanButton = document.getElementById('scanButton');
   const kodePanggilInput = document.getElementById('kode_panggil');
 
+  // Mengambil elemen-elemen HTML yang akan digunakan dalam skrip:
+
+//video: Elemen video untuk menampilkan umpan kamera.
+//scanButton: Tombol untuk memulai pemindaian QR Code.
+//kodePanggilInput: Input text untuk menampilkan hasil pemindaian QR Code
+
   scanButton.addEventListener('click', async () => {
+    // Menambahkan event listener pada tombol scan untuk menjalankan fungsi pemindaian saat tombol ditekan.
     try {
+      // Mengakses kamera perangkat menggunakan API getUserMedia dengan opsi facingMode: 'environment' untuk menggunakan kamera belakang (biasanya pada perangkat mobile).
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       video.srcObject = stream;
       await video.play();
 
+      // Membuat elemen canvas dan mengatur ukurannya sesuai dengan ukuran video untuk menangkap gambar dari umpan video.
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
+      // Fungsi scan melakukan hal berikut:
+//Mengambil gambar dari elemen video dan menggambarnya di canvas.
+//Mengambil data gambar dari canvas dan menggunakannya untuk mendeteksi QR code menggunakan jsQR.
+//Jika QR code terdeteksi, nilai dari QR code dimasukkan ke dalam input text kode_panggil dan kamera dihentikan.
+//Jika tidak terdeteksi, fungsi scan dipanggil kembali pada frame berikutnya menggunakan requestAnimationFrame.
       const scan = () => {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -128,11 +144,31 @@
       };
 
       requestAnimationFrame(scan);
-    } catch (error) {
+    } 
+    //  Menangkap dan mencetak kesalahan jika terjadi masalah saat mengakses kamera
+    catch (error) {
       console.error('Error accessing camera:', error);
     }
   });
 </script>
+
+<!--
+  Intisari
+HTML:
+
+Struktur Halaman: Terdiri dari header, breadcrumb, dan form untuk input data.
+Video Container: Tempat untuk menampilkan video dari kamera.
+Form: Input text untuk hasil pemindaian QR code dan tombol untuk memulai scan serta menyimpan data.
+
+JavaScript:
+
+Library jsQR: Digunakan untuk mendeteksi dan membaca QR code dari gambar.
+Event Listener: Menggunakan tombol untuk memulai proses pemindaian QR code.
+API getUserMedia: Mengakses kamera perangkat untuk menangkap umpan video.
+Canvas: Menangkap gambar dari video dan memprosesnya untuk mendeteksi QR code.
+Fungsi scan: Melakukan pemindaian QR code secara berulang hingga kode terdeteksi atau proses dihentikan.
+Skrip ini memungkinkan pengguna untuk memindai QR code menggunakan kamera perangkat mereka dan memasukkan hasilnya ke dalam input form secara otomatis.
+-->
 
 
 
